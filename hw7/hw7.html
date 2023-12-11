@@ -3389,13 +3389,40 @@ z-index: 1000;
 <pre class="mermaid mermaid-js">erDiagram
     CUSTOMER ||--o{ ORDER : places
     CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
-    CUSTOMER{
+    CUSTOMER ||--o{ PEOPLE : is
+    ORDER }|..|{ PEOPLE : includes
+    ORDER ||--o{ SKILLS : requires
+    PEOPLE ||--o{ PEOPLESKILLS : acquires
+    PEOPLE ||--o{ PEOPLEROLES : has
+    SKILLS {
+        int id
+        string name
+        string description
+        string tag
+    }
+    PEOPLE{
         int id
         string first_name
         string last_name
+        string email
+        string linkedin_url
+        string headshot_url
+        string discord_handle
+        string brief_bio
+        date date_joined
     }
-    DELIVERY-ADDRESS {
+    PEOPLESKILLS{
         int id
+        date date_acquired
+    }
+    ROLES{
+        int id
+        string name
+        int sort_priority
+    }
+    PEOPLEROLES{
+        int id
+        date date_assigned
     }
 </pre>
 </div>
@@ -3410,7 +3437,7 @@ z-index: 1000;
 <p>The <em>people</em> table contains elements that describe individuals, with each row representing a unique person. The table includes attributes such as a person’s first name, last name, email address, LinkedIn URL, headshot URL, Discord handle, brief biography, and date of joining the community.</p>
 <p>Below is a list of data in the <em>people</em> table.</p>
 <div class="cell" data-execution_count="5">
-<div class="cell-output cell-output-display" data-execution_count="30">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -3562,7 +3589,7 @@ z-index: 1000;
 <p>The <em>skills</em> table contains elements that describe various skills, each represented by a unique row. It includes attributes such as the skill’s name, description, tag (a category grouping for the skill), and an identifier, “id,” serving as the primary key to distinguish each skill entry within the database.</p>
 <p>Below is a list of data in the <em>skills</em> table.</p>
 <div class="cell" data-execution_count="6">
-<div class="cell-output cell-output-display" data-execution_count="31">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -3645,7 +3672,7 @@ z-index: 1000;
 <p>The <em>roles</em> table contains elements that describe different roles within the context of the resume database. Each role is represented as a unique entry in the table and is characterized by attributes such as its name, a numerical sort priority for ordering, and a unique identifier.</p>
 <p>Below is a list of data in the <em>roles</em> table.</p>
 <div class="cell" data-execution_count="7">
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -3717,7 +3744,7 @@ z-index: 1000;
 </div>
 <p>(and here is a sample result from the query)</p>
 <div class="cell" data-execution_count="9">
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -3877,7 +3904,7 @@ z-index: 1000;
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="11">
-<div class="cell-output cell-output-display" data-execution_count="36">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
 
@@ -3968,7 +3995,7 @@ z-index: 1000;
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="13">
-<div class="cell-output cell-output-display" data-execution_count="38">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -4026,7 +4053,7 @@ z-index: 1000;
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="15">
-<div class="cell-output cell-output-display" data-execution_count="40">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
 
@@ -4066,7 +4093,7 @@ z-index: 1000;
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="17">
-<div class="cell-output cell-output-display" data-execution_count="42">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <div>
 
 
@@ -4126,7 +4153,7 @@ z-index: 1000;
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="19">
-<div class="cell-output cell-output-display" data-execution_count="44">
+<div class="cell-output cell-output-display" data-execution_count="19">
 <div>
 
 
@@ -4192,7 +4219,7 @@ z-index: 1000;
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="21">
-<div class="cell-output cell-output-display" data-execution_count="46">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
@@ -4280,7 +4307,7 @@ z-index: 1000;
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="23">
-<div class="cell-output cell-output-display" data-execution_count="48">
+<div class="cell-output cell-output-display" data-execution_count="23">
 <div>
 
 
@@ -4330,7 +4357,7 @@ z-index: 1000;
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&quot;&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="25">
-<div class="cell-output cell-output-display" data-execution_count="50">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 

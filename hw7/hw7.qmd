@@ -102,13 +102,40 @@ this diagram illustrates the relationships between customers, orders, and delive
 erDiagram
     CUSTOMER ||--o{ ORDER : places
     CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
-    CUSTOMER{
+    CUSTOMER ||--o{ PEOPLE : is
+    ORDER }|..|{ PEOPLE : includes
+    ORDER ||--o{ SKILLS : requires
+    PEOPLE ||--o{ PEOPLESKILLS : acquires
+    PEOPLE ||--o{ PEOPLEROLES : has
+    SKILLS {
+        int id
+        string name
+        string description
+        string tag
+    }
+    PEOPLE{
         int id
         string first_name
         string last_name
+        string email
+        string linkedin_url
+        string headshot_url
+        string discord_handle
+        string brief_bio
+        date date_joined
     }
-    DELIVERY-ADDRESS {
+    PEOPLESKILLS{
         int id
+        date date_acquired
+    }
+    ROLES{
+        int id
+        string name
+        int sort_priority
+    }
+    PEOPLEROLES{
+        int id
+        date date_assigned
     }
 ```
 
