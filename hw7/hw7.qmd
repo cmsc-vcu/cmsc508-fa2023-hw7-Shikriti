@@ -1,7 +1,7 @@
 ---
 title: Homework 7 - Creating a resume database
-author: (your name goes here!)
-date: last-modified
+author: Shikriti Ghosh
+date: 11/28/2023
 format:
     html:
         theme: cosmo
@@ -10,11 +10,10 @@ format:
         code-copy: true
 ---
 
-(include a brief description of what is in this document)
+The QMD file serves as documentation for a resume database project, covering table creation, relationship establishment, and sample data insertion. It includes a Crows-foot diagram, displays sample table data, and showcases SQL queries for extracting specific information from the database.
 
-(Please clean up any comments that I included.  This is a scaffold document.)
 
-GITHUB URL:  <your URL goes here!>
+GITHUB URL:  <https://github.com/cmsc-vcu/cmsc508-fa2023-hw7-Shikriti.git>
 
 ```{python}
 #| eval: true
@@ -34,10 +33,10 @@ from IPython.display import display, Markdown
 
 # modify config_map to reflect credentials needed by this program
 config_map = {
-    'user':'CMSC508_USER',
-    'password':'CMSC508_PASSWORD',
-    'host':'CMSC508_HOST',
-    'database':'HW7_DB_NAME'
+    'user':'user',
+    'password':'password',
+    'host':'host',
+    'database':'database'
 }
 # load and store credentials
 load_dotenv()
@@ -92,11 +91,11 @@ except Exception as e:
 
 ## Overview and description
 
-(briefly describe the project and the database)
+This project involves creating a resume database. The database includes tables for people, skills, roles, and their relationships. The following sections provide details on the database schema, data, and sample queries.
 
 ## Crows-foot diagram
 
-(add a description of the diagram and what the reader is seeing.)
+this diagram illustrates the relationships between customers, orders, and delivery addresses in a database. It conveys the cardinality (how many instances of one entity are related to another) and participation constraints (whether the existence of an entity depends on its relationship with another) in a clear and concise visual format. Customers can place multiple orders (one-to-many), and each order is linked to a single customer. Additionally, customers can use multiple delivery addresses, each uniquely tied to a customer. 
 
 ```{mermaid}
 %%| echo: false
@@ -115,55 +114,70 @@ erDiagram
 
 ## Examples of data in the database
 
-For the people, skills, and roles tables, provide a description of each table and it's contents. Then provide a listing of the entire table.
-
 ### People table
 
-The *people* table contains elements that describe ... 
+The *people* table contains elements that describe individuals, with each row representing a unique person. The table includes attributes such as a person's first name, last name, email address, LinkedIn URL, headshot URL, Discord handle, brief biography, and date of joining the community. 
 
 Below is a list of data in the *people* table.
 
 ```{python}
 #| echo: false
 #| eval: true
-sql = f"""
-select * from people;
+sql_people = f"""
+SELECT * FROM people;
 """
-## Add code to list roles table here
 try:
-    df = pd.read_sql(sql,cnx)
-    df
+    df_people = pd.read_sql(sql_people, cnx)
+    df_people
 except Exception as e:
     message = str(e)
     print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
-    df = pd.DataFrame()
-df
+    df_people = pd.DataFrame()
+df_people
 ```
 
 ### Skills table
 
-The *skills* table contains elements that describe ... 
+The *skills* table contains elements that describe various skills, each represented by a unique row. It includes attributes such as the skill's name, description, tag (a category grouping for the skill), and an identifier, "id," serving as the primary key to distinguish each skill entry within the database.
 
 Below is a list of data in the *skills* table.
 
 ```{python}
 #| echo: false
 #| eval: true
-
-## Add code to list roles table here
+sql_skills = f"""
+SELECT * FROM skills;
+"""
+try:
+    df_skills = pd.read_sql(sql_skills, cnx)
+    df_skills
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df_skills = pd.DataFrame()
+df_skills
 ```
 
 ### Roles table
 
-The *roles* table contains elements that describe ... 
+The *roles* table contains elements that describe different roles within the context of the resume database. Each role is represented as a unique entry in the table and is characterized by attributes such as its name, a numerical sort priority for ordering, and a unique identifier.
 
 Below is a list of data in the *roles* table.
 
 ```{python}
 #| echo: false
 #| eval: true
-
-## Add code to list roles table here
+sql_roles = f"""
+SELECT * FROM roles;
+"""
+try:
+    df_roles = pd.read_sql(sql_roles, cnx)
+    df_roles
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df_roles = pd.DataFrame()
+df_roles
 ```
 
 
@@ -180,10 +194,7 @@ sql = f"""
 select * from people
 """
 ```
-
-
 (and here is a sample result from the query)
-
 ```{python}
 #| echo: false
 #| eval: true
@@ -200,30 +211,252 @@ df
 
 
 ### List people names and email addresses ordered by last_name
+```{python}
+sql = """
+SELECT
+    people_last_name,
+    email
+FROM
+    people
+ORDER BY
+    people_last_name;
+"""
+```
+```{python}
+#| echo: false
+#| eval: true
 
+try:
+    df = pd.read_sql(sql, cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+```
 
 ### List skill names of Person 1
 
+```{python}
+sql = f"""
+SELECT
+    people_last_name,
+    name,
+    tag
+from
+    peopleskills a
+    inner join people b on (a.people_id=b.people_id)
+    inner join skills c on (a.skills_id=c.id)
+WHERE
+    people_last_name='Person 1'
+order BY
+    name,
+    people_last_name
+;
+"""
+```
+
+```{python}
+#| echo: false
+#| eval: true
+try:
+    df = pd.read_sql(sql,cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+
+```
+
 
 ### List people names with Skill 6
+```{python}
+sql = """
+SELECT
+    p.people_id,
+    p.people_first_name,
+    p.people_last_name
+FROM
+    people p
+JOIN
+    peopleskills ps ON p.people_id = ps.people_id
+JOIN
+    skills s ON ps.skills_id = s.id
+WHERE
+    s.tag = 'Skill 6';
+"""
+```
+```{python}
+#| echo: false
+#| eval: true
 
+try:
+    df = pd.read_sql(sql, cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+```
 
 ### List people with a DEVELOPER role
+```{python}
+sql = """
+SELECT
+    p.people_id,
+    p.people_first_name,
+    p.people_last_name
+FROM
+    people p
+JOIN
+    peopleroles pr ON p.people_id = pr.people_id
+JOIN
+    roles r ON pr.role_id = r.id
+WHERE
+    r.name = 'Developer';
+"""
+```
+```{python}
+#| echo: false
+#| eval: true
+
+try:
+    df = pd.read_sql(sql, cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+```
+
 
 
 ### List names and email addresses of people without skills
+```{python}
+sql = """
+SELECT
+    b.people_last_name,
+    b.email
+FROM
+    people b
+    LEFT JOIN peopleskills a ON (a.people_id = b.people_id)
+WHERE
+    a.id IS NULL;
+"""
+```
+```{python}
+#| echo: false
+#| eval: true
+
+try:
+    df = pd.read_sql(sql, cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+```
 
 
 ### List names and tags of unused skills
+```{python}
+sql = """
+SELECT
+    s.name AS skill_name,
+    s.tag AS skill_tag
+FROM
+    skills s
+LEFT JOIN
+    peopleskills ps ON s.id = ps.skills_id
+WHERE
+    ps.id IS NOT NULL;
+"""
+```
+```{python}
+#| echo: false
+#| eval: true
 
+try:
+    df = pd.read_sql(sql, cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+```
 
 ### List people names and skill names with the BOSS role
+```{python}
+sql = """
+SELECT
+    p.people_first_name,
+    p.people_last_name,
+    s.name AS skill_name
+FROM
+    people p
+JOIN
+    peopleroles pr ON p.people_id = pr.people_id
+JOIN
+    roles r ON pr.role_id = r.id
+LEFT JOIN
+    peopleskills ps ON p.people_id = ps.people_id
+LEFT JOIN
+    skills s ON ps.skills_id = s.id
+WHERE
+    r.name = 'Boss';
+"""
+```
+```{python}
+#| echo: false
+#| eval: true
 
+try:
+    df = pd.read_sql(sql, cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+```
 
 ### List ids and names of unused roles
+```{python}
+sql= """
+SELECT
+    s.id AS skill_id,
+    s.name AS skill_name
+FROM
+    skills s
+LEFT JOIN
+    peopleskills ps ON s.id = ps.skills_id
+WHERE
+    ps.skills_id IS NULL;
 
+"""
+```
+```{python}
+#| echo: false
+#| eval: true
+
+try:
+    df = pd.read_sql(sql, cnx)
+    df
+except Exception as e:
+    message = str(e)
+    print(f"An error occurred:\n\n{message}\n\nIgnoring and moving on.")
+    df = pd.DataFrame()
+df
+```
 
 ## Reflection
 
-(Write a paragraph expressing your thoughts, feelings, and insights about your experience with this assignment.  Pause and breath before writing - I'm trying to encourage critical thinking and self-awareness while allowing you to explore the connections between theory and practice. And yes, delete this paragraph.)
+When creating the table in the ddl file, I kept running into difficulties with syntax. However the errors weren't terribly difficult to fix. I found myself struggling more when listing the different traits in the qmd. I kept getting errors like the table does not exist and parts of my data were represented incorrectly. Having so many details caused me to take longer with this assignment than expected. In the end, this was one of my favorite assignmnets because I was able to learn a lot about ddl files and how to properly convey information from the different tables in the html document.
 
